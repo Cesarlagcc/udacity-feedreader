@@ -23,50 +23,99 @@ $(function() {
          */
         it('are defined', function() {
             expect(allFeeds).toBeDefined();
-            expect(allFeeds.length).not.toBe(0);
+            expect(allFeeds.length).toBeGreaterThan(0);
         });
 
 
-        /* TODO: Write a test that loops through each feed
+        /* This is a test that loops through each feed
          * in the allFeeds object and ensures it has a URL defined
          * and that the URL is not empty.
          */
+        it('URLs are defined', function(){
+            for(var i = 0; i < allFeeds.length; i++){
+                expect(allFeeds[i].url).toBeDefined();
+                expect(allFeeds[i].url.length).toBeGreaterThan(0);
+            }
+        });
 
 
-        /* TODO: Write a test that loops through each feed
+        /* This test loops through each feed
          * in the allFeeds object and ensures it has a name defined
          * and that the name is not empty.
          */
+
+        it('names are defined', function(){
+           for(var i = 0; i < allFeeds.length; i++){
+                expect(allFeeds[i].name).toBeDefined();
+                expect(allFeeds[i].name.length).toBeGreaterThan(0);
+            }
+        });
     });
 
+    describe('The menu', function () {
 
-    /* TODO: Write a new test suite named "The menu" */
-
-        /* TODO: Write a test that ensures the menu element is
-         * hidden by default. You'll have to analyze the HTML and
-         * the CSS to determine how we're performing the
-         * hiding/showing of the menu element.
+        /* This test ensures the menu element is
+         * hidden by default.
          */
 
-         /* TODO: Write a test that ensures the menu changes
+        it('menu is hidden', function () {
+            expect($('body').hasClass('menu-hidden')).toBeDefined();
+        });
+
+         /* This test ensures the menu changes
           * visibility when the menu icon is clicked. This test
-          * should have two expectations: does the menu display when
+          * should has two expectations: does the menu display when
           * clicked and does it hide when clicked again.
           */
 
-    /* TODO: Write a new test suite named "Initial Entries" */
+        it('menu changes visibility when icon is clicked', function(){
+            $('a.menu-icon-link').trigger('click');
+            expect($('body').hasClass('menu-hidden')).toBe(false);
 
-        /* TODO: Write a test that ensures when the loadFeed
+            $('a.menu-icon-link').trigger('click');
+            expect($('body').hasClass('menu-hidden')).toBe(true);
+        });
+
+    });
+
+    describe('Initial Entries', function() {
+        /* This test ensures when the loadFeed
          * function is called and completes its work, there is at least
          * a single .entry element within the .feed container.
-         * Remember, loadFeed() is asynchronous so this test will require
+         * Since loadFeed() is asynchronous, this test will require
          * the use of Jasmine's beforeEach and asynchronous done() function.
          */
 
-    /* TODO: Write a new test suite named "New Feed Selection" */
+        beforeEach(function(done){
+            loadFeed(0, done);
+        });
 
-        /* TODO: Write a test that ensures when a new feed is loaded
+        it('has at least one entry in feed container', function(){
+            expect($('.feed .entry').length).not.toBeLessThan(1);
+        });
+    });
+
+        /* This test ensures when a new feed is loaded
          * by the loadFeed function that the content actually changes.
-         * Remember, loadFeed() is asynchronous.
          */
+
+    describe('New Feed Selection', function(){
+        var content1;
+        var content2;
+        beforeEach(function(done){
+          $('.feed').empty();
+          loadFeed(0, function() {
+          content1 = $('.feed').html();
+          loadFeed(1, done);
+          });
+        });
+        it('ensures the new feed is loaded and the content changes', function(done){
+          content2 = $('.feed').html();
+          expect(content1).not.toBe(content2);
+          done(); //if I delete this line then the jasmine doesn't fully load on the page
+        });
+        afterAll(function(done) {
+        loadFeed(0, done);
+        });
+    });
 }());
